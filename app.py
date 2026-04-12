@@ -227,7 +227,6 @@ def create_word_report(patient, act_score, act_interpretation, hads_a_score, had
     
     return doc
 
-excel_file = create_excel_report(patient)
 
 def create_excel_report(patient):
     """Создаёт Excel-файл с данными текущего пациента и возвращает его для скачивания"""
@@ -529,6 +528,8 @@ def render_results():
     
     # Кнопка сохранения в Word
     st.divider()
+
+    excel_file = create_excel_report(patient)
     
     doc = create_word_report(
         patient,
