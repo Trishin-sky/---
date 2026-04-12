@@ -8,6 +8,8 @@ from docx.shared import Inches, Pt
 from io import BytesIO
 import base64
 from pathlib import Path
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 # ==================== НАСТРОЙКИ СТРАНИЦЫ ====================
 st.set_page_config(
@@ -269,6 +271,22 @@ def save_to_excel(patients_db):
     
     df = pd.DataFrame(data)
     df.to_excel("data/patients_database.xlsx", index=False)
+
+
+
+def save_to_google_sheets(patient):
+    scope = ["https://docs.google.com/spreadsheets/d/1j_1zPwweVxm_G53_-iEByMrSAz7RpjadKBsNx1KUlnE/edit?gid=1104958524#gid=1104958524"]
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(
+        st.secrets["gcp_service_account"], scope
+    )
+    client = gspread.authorize(creds)
+    sheet = client.open("Астма-тест База").sheet1
+    
+    # Добавляем новую строку
+    row = [patient['id'], patient['fio'], patient['birth_date'], 
+           patient['gender'], patient['test_date'], patient['act_score'],
+           patient['hads_a_score'], patient['hads_d_score'], patient['cirs_score']]
+    sheet.append_row(row)
 
 # ==================== СТРАНИЦА: ИНФОРМАЦИЯ О ПАЦИЕНТЕ ====================
 def render_patient_info():
@@ -535,15 +553,6 @@ def render_results():
             st.rerun()
 
 
-if 'patients_db' not in st.session_state:
-    excel_path = Path("data") / "patients_database.xlsx"
-    
-    if excel_path.exists():
-        # Читаем из существующего файла
-        df = pd.read_excel(excel_path)
-        st.session_state.patients_db = df.to_dict('records')
-    else:
-        st.session_state.patients_db = []
 
 # ==================== БОКОВАЯ ПАНЕЛЬ ====================
 def render_sidebar():
