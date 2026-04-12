@@ -7,6 +7,7 @@ from docx import Document
 from docx.shared import Inches, Pt
 from io import BytesIO
 import base64
+from pathlib import Path
 
 # ==================== НАСТРОЙКИ СТРАНИЦЫ ====================
 st.set_page_config(
@@ -532,6 +533,17 @@ def render_results():
             }
             st.session_state.page = "patient_info"
             st.rerun()
+
+
+if 'patients_db' not in st.session_state:
+    excel_path = Path("data") / "patients_database.xlsx"
+    
+    if excel_path.exists():
+        # Читаем из существующего файла
+        df = pd.read_excel(excel_path)
+        st.session_state.patients_db = df.to_dict('records')
+    else:
+        st.session_state.patients_db = []
 
 # ==================== БОКОВАЯ ПАНЕЛЬ ====================
 def render_sidebar():
