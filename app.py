@@ -267,7 +267,7 @@ def save_to_excel(patients_db):
         data.append(row)
     
     df = pd.DataFrame(data)
-    df.to_excel("patients_database.xlsx", index=False)
+    df.to_excel("data/atients_database.xlsx", index=False)
 
 # ==================== СТРАНИЦА: ИНФОРМАЦИЯ О ПАЦИЕНТЕ ====================
 def render_patient_info():
