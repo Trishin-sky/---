@@ -273,8 +273,9 @@ def save_to_excel(patients_db):
     df.to_excel("data/patients_database.xlsx", index=False)
 
 
+save_to_google_sheets(st.session_state.patients_db)
 
-def save_to_google_sheets(patient):
+def save_to_google_sheets(patient_db):
     scope = ["https://docs.google.com/spreadsheets/d/1j_1zPwweVxm_G53_-iEByMrSAz7RpjadKBsNx1KUlnE/edit?gid=1104958524#gid=1104958524"]
     creds = ServiceAccountCredentials.from_json_keyfile_dict(
         st.secrets["gcp_service_account"], scope
@@ -283,9 +284,17 @@ def save_to_google_sheets(patient):
     sheet = client.open("Астма-тест База").sheet1
     
     # Добавляем новую строку
-    row = [patient['id'], patient['fio'], patient['birth_date'], 
-           patient['gender'], patient['test_date'], patient['act_score'],
-           patient['hads_a_score'], patient['hads_d_score'], patient['cirs_score']]
+    row = {
+        'ID': p['id'],
+        'ФИО': p['fio'],
+        'Дата рождения': p['birth_date'],
+        'Пол': p['gender'],
+        'Дата тестирования': p['test_date'],
+        'ACT (баллы)': p['act_score'],
+        'HADS-Тревога (баллы)': p['hads_a_score'],
+        'HADS-Депрессия (баллы)': p['hads_d_score'],
+        'CIRS (баллы)': p['cirs_score']
+    }
     sheet.append_row(row)
 
 # ==================== СТРАНИЦА: ИНФОРМАЦИЯ О ПАЦИЕНТЕ ====================
