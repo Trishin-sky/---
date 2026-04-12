@@ -227,6 +227,7 @@ def create_word_report(patient, act_score, act_interpretation, hads_a_score, had
     
     return doc
 
+excel_file = create_excel_report(patient)
 
 def create_excel_report(patient):
     """Создаёт Excel-файл с данными текущего пациента и возвращает его для скачивания"""
@@ -280,7 +281,6 @@ def save_to_database(patient):
     # Сохраняем в Excel
     save_to_excel(st.session_state.patients_db)
 
-    excel_file = create_excel_report(patient)
 
 def save_to_excel(patients_db):
     if not patients_db:
