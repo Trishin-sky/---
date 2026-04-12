@@ -249,6 +249,7 @@ def save_to_database(patient):
     
     # Сохраняем в Excel
     save_to_excel(st.session_state.patients_db)
+    save_to_google_sheets(st.session_state.patients_db)
 
 def save_to_excel(patients_db):
     if not patients_db:
@@ -273,7 +274,6 @@ def save_to_excel(patients_db):
     df.to_excel("data/patients_database.xlsx", index=False)
 
 
-save_to_google_sheets(st.session_state.patients_db)
 
 def save_to_google_sheets(patient_db):
     scope = ["https://docs.google.com/spreadsheets/d/1j_1zPwweVxm_G53_-iEByMrSAz7RpjadKBsNx1KUlnE/edit?gid=1104958524#gid=1104958524"]
