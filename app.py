@@ -227,6 +227,38 @@ def create_word_report(patient, act_score, act_interpretation, hads_a_score, had
     
     return doc
 
+
+def create_excel_report(patient):
+    """Создаёт Excel-файл с данными текущего пациента и возвращает его для скачивания"""
+    # Создаём DataFrame с данными текущего пациента
+    data = [{
+        'ID': patient['id'],
+        'ФИО': patient['fio'],
+        'Дата рождения': patient['birth_date'],
+        'Пол': patient['gender'],
+        'Дата тестирования': patient['test_date'],
+        'ACT (баллы)': patient['act_score'],
+        'ACT (интерпретация)': interpret_act(patient['act_score'])[0],
+        'HADS-Тревога (баллы)': patient['hads_a_score'],
+        'HADS-Тревога (интерпретация)': interpret_hads(patient['hads_a_score'], "anxiety")[0],
+        'HADS-Депрессия (баллы)': patient['hads_d_score'],
+        'HADS-Депрессия (интерпретация)': interpret_hads(patient['hads_d_score'], "depression")[0],
+        'CIRS (баллы)': patient['cirs_score'],
+        'CIRS (интерпретация)': interpret_cirs(patient['cirs_score'])[0]
+    }]
+    
+    df = pd.DataFrame(data)
+    
+    # Сохраняем в BytesIO (виртуальный файл в памяти)
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False, sheet_name='Результаты пациента')
+    
+    output.seek(0)  # Возвращаем курсор в начало файла
+    return output
+
+
+
 # ==================== ФУНКЦИЯ СОХРАНЕНИЯ В БАЗУ ====================
 def save_to_database(patient):
     # Проверяем, существует ли уже такой пациент (по ID)
@@ -247,6 +279,8 @@ def save_to_database(patient):
     
     # Сохраняем в Excel
     save_to_excel(st.session_state.patients_db)
+
+    excel_file = create_excel_report(patient)
 
 def save_to_excel(patients_db):
     if not patients_db:
@@ -519,11 +553,16 @@ def render_results():
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             use_container_width=True
         )
-    
+
+
     with col2:
-        if st.button("💾 Сохранить в базу (Excel)", use_container_width=True):
-            save_to_database(patient)
-            st.success("Результаты сохранены в базу данных!")
+        st.download_button(
+            label="📊 Скачать результаты (Excel)",
+            data=excel_file,
+            file_name=f"Астма-тест_{patient['fio']}_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            use_container_width=True
+        )
     
     with col3:
         if st.button("🔄 Новый пациент", use_container_width=True):
