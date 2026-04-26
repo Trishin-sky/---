@@ -17,13 +17,7 @@ st.set_page_config(
 )
 
 # ==================== ИНИЦИАЛИЗАЦИЯ СЕССИИ ====================
-if 'patients_db' not in st.session_state:
-    # Загружаем существующую базу если есть
-    if os.path.exists("patients_data.json"):
-        with open("patients_data.json", "r", encoding="utf-8") as f:
-            st.session_state.patients_db = json.load(f)
-    else:
-        st.session_state.patients_db = []
+
 
 if 'current_patient' not in st.session_state:
     st.session_state.current_patient = {
@@ -274,8 +268,7 @@ def save_to_database(patient):
         st.session_state.patients_db.append(patient.copy())
     
     # Сохраняем в JSON
-    with open("patients_data.json", "w", encoding="utf-8") as f:
-        json.dump(st.session_state.patients_db, f, ensure_ascii=False, indent=2)
+    
     
     # Сохраняем в Excel
     save_to_excel(st.session_state.patients_db)
