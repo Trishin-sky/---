@@ -267,8 +267,6 @@ def save_to_database(patient):
         # Добавляем нового
         st.session_state.patients_db.append(patient.copy())
     
-    # Сохраняем в JSON
-    
     
     # Сохраняем в Excel
     save_to_excel(st.session_state.patients_db)
